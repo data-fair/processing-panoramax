@@ -1,0 +1,56 @@
+{
+  "name": "@data-fair/processing-panoramax",
+  "version": "0.1.0",
+  "description": "Synchronise les photos géolocalisées d'un jeu de données Data Fair éditable vers une instance Panoramax.",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint .",
+    "lint-fix": "eslint --fix .",
+    "prepare": "husky || true",
+    "build-types": "export NODE_OPTIONS='--experimental-strip-types' && df-build-types ./",
+    "test-base": "NODE_ENV=test node --experimental-strip-types --test-force-exit --test-concurrency=1 --test --test-reporter=spec --test-reporter-destination=stdout",
+    "test": "npm run test-base test-it/*.ts"
+  },
+  "imports": {
+    "#types/*": "./types/*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/data-fair/processing-panoramax.git"
+  },
+  "keywords": [
+    "data-fair-processings-plugin"
+  ],
+  "author": "Koumoul <contact@koumoul.com>",
+  "license": "AGPL-3.0-only",
+  "bugs": {
+    "url": "https://github.com/data-fair/processing-panoramax/issues"
+  },
+  "homepage": "https://github.com/data-fair/processing-panoramax#readme",
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@data-fair/lib-common-types": "^1.20.6",
+    "@data-fair/lib-processing-dev": "^0.3.0",
+    "@data-fair/lib-types-builder": "^1.7.0",
+    "@types/node": "^25.5.0",
+    "debug": "^4.4.0",
+    "eslint": "^9.26.0",
+    "husky": "^9.1.7",
+    "nock": "^14.0.10",
+    "neostandard": "^0.12.1",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "form-data": "^4.0.5"
+  },
+  "files": [
+    "processing-config-schema.json",
+    "./lib/**/*"
+  ],
+  "relativeDependencies": {
+    "@data-fair/lib-common-types": "../lib/packages/common-types",
+    "@data-fair/lib-processing-dev": "../lib/packages/processing-dev"
+  }
+}

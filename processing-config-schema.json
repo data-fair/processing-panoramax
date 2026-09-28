@@ -1,0 +1,129 @@
+{
+  "$id": "https://github.com/data-fair/processing-panoramax/processing-config",
+  "type": "object",
+  "title": "ProcessingConfig",
+  "layout": {
+    "comp": "tabs"
+  },
+  "default": {
+    "datasetMode": "create",
+    "visibility": "anyone"
+  },
+  "required": ["datasetMode", "sourceDataset", "panoramaxUrl", "panoramaxToken"],
+  "allOf": [
+    {
+      "title": "Jeu de données source",
+      "properties": {
+        "sourceDataset": {
+          "type": "object",
+          "title": "Jeu de données source",
+          "description": "Jeu de données éditable (REST) contenant les photos géolocalisées à synchroniser.",
+          "required": ["id"],
+          "layout": {
+            "getItems": {
+              "url": "${context.dataFairUrl}/api/v1/datasets?select=id,title&size=50&${context.ownerFilter}&rest=true",
+              "qSearchParam": "q",
+              "itemsResults": "data.results",
+              "itemTitle": "item.title",
+              "itemKey": "item.id"
+            }
+          },
+          "properties": {
+            "id": { "type": "string", "title": "Identifiant" },
+            "title": { "type": "string", "title": "Titre" }
+          }
+        },
+        "photoField": {
+          "type": "string",
+          "title": "Colonne photo",
+          "description": "Colonne contenant la pièce jointe (concept `DigitalDocument`). Laissez vide pour détecter automatiquement la première colonne de ce type."
+        },
+        "dateField": {
+          "type": "string",
+          "title": "Colonne date de prise de vue",
+          "description": "Optionnel. Colonne contenant la date et l'heure de prise de vue (format ISO 8601). Sans elle, Panoramax utilise la date EXIF de la photo."
+        }
+      }
+    },
+    {
+      "title": "Panoramax",
+      "required": ["panoramaxUrl", "panoramaxToken"],
+      "properties": {
+        "panoramaxUrl": {
+          "type": "string",
+          "title": "URL de l'instance",
+          "description": "URL de base de l'instance Panoramax, sans `/api`.",
+          "examples": ["https://panoramax.ign.fr"]
+        },
+        "panoramaxToken": {
+          "type": "string",
+          "title": "Jeton d'accès",
+          "description": "Jeton JWT d'un compte autorisé à téléverser des photos sur l'instance. Il est stocké dans les secrets du traitement à l'enregistrement de la configuration.",
+          "layout": {
+            "props": {
+              "type": "password",
+              "autocomplete": "suppress"
+            }
+          }
+        },
+        "visibility": {
+          "type": "string",
+          "title": "Visibilité des photos",
+          "description": "Visibilité appliquée au lot de photos téléversées. `Propriétaire uniquement` permet de masquer les photos au public.",
+          "default": "anyone",
+          "oneOf": [
+            { "const": "anyone", "title": "Tout le monde" },
+            { "const": "logged-only", "title": "Utilisateurs connectés" },
+            { "const": "owner-only", "title": "Propriétaire uniquement" }
+          ]
+        }
+      }
+    },
+    {
+      "title": "Jeu de suivi",
+      "default": {
+        "datasetMode": "create"
+      },
+      "oneOf": [
+        {
+          "title": "Créer le jeu de suivi",
+          "required": ["datasetMode", "datasetTitle"],
+          "properties": {
+            "datasetMode": { "type": "string", "const": "create", "title": "Action" },
+            "datasetTitle": {
+              "type": "string",
+              "title": "Titre du jeu de suivi à créer",
+              "default": "Suivi Panoramax",
+              "description": "Le jeu de suivi contient l'état de la synchronisation (une ligne par photo). Il est créé à la première exécution, puis le traitement bascule en mode mise à jour et le réutilise à chaque exécution suivante."
+            }
+          }
+        },
+        {
+          "title": "Mettre à jour le jeu de suivi",
+          "required": ["datasetMode", "dataset"],
+          "properties": {
+            "datasetMode": { "type": "string", "const": "update", "title": "Action" },
+            "dataset": {
+              "type": "object",
+              "title": "Jeu de suivi",
+              "required": ["id"],
+              "layout": {
+                "getItems": {
+                  "url": "${context.dataFairUrl}/api/v1/datasets?select=id,title&size=50&${context.ownerFilter}&rest=true",
+                  "qSearchParam": "q",
+                  "itemsResults": "data.results",
+                  "itemTitle": "item.title",
+                  "itemKey": "item.id"
+                }
+              },
+              "properties": {
+                "id": { "type": "string", "title": "Identifiant" },
+                "title": { "type": "string", "title": "Titre" }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
